@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Find books')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('search')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head"><div><h1>Find books</h1>
+    <p><span th:text="${results.size()}">0</span> book(s)<span th:if="${!q.isEmpty()}" th:text="' matching “' + ${q} + '”'"></span></p></div></div>
+  <form class="row panel" method="get" th:action="@{/member/search}">
+    <div style="flex:3 1 240px"><label for="q">Search</label>
+      <input id="q" type="search" name="q" th:value="${q}" placeholder="Title, author or genre"></div>
+    <div><label for="field">Search in</label>
+      <select id="field" name="field">
+        <option value="all" th:selected="${field == 'all'}">Everything</option>
+        <option value="title" th:selected="${field == 'title'}">Title</option>
+        <option value="author" th:selected="${field == 'author'}">Author</option>
+        <option value="genre" th:selected="${field == 'genre'}">Genre</option>
+      </select></div>
+    <div class="shrink"><button class="btn" type="submit">Search</button></div>
+  </form>
+  <div class="catalogue" th:if="${!results.isEmpty()}">
+    <article class="card" th:each="b : ${results}">
+      <h3 th:text="${b.book.title}">Title</h3>
+      <div class="meta" th:text="${b.book.author}">Author</div>
+      <div><span class="tag" th:text="${b.book.genre}">Genre</span></div>
+      <div class="foot">
+        <span class="tag" th:classappend="${b.available <= 0} ? 'out'"
+              th:text="${b.available} + ' of ' + ${b.book.totalCopies} + ' available'"></span>
+        <span class="stamp due" th:if="${borrowed.contains(b.book.id)}">On your shelf</span>
+        <form method="post" th:unless="${borrowed.contains(b.book.id)}" th:action="@{/member/borrow/{id}(id=${b.book.id})}">
+          <input type="hidden" name="q" th:value="${q}">
+          <input type="hidden" name="field" th:value="${field}">
+          <button class="btn small" type="submit" th:disabled="${b.available <= 0}">Borrow</button>
+        </form>
+      </div>
+    </article>
+  </div>
+  <p class="empty" th:if="${results.isEmpty()}">No books match that search. Try a shorter word or search in everything.</p>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

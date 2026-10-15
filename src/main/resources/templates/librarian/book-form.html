@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${editing} ? 'Edit book' : 'Add a book')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('books')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head"><h1 th:text="${editing} ? 'Edit book' : 'Add a book'">Add a book</h1></div>
+  <section class="panel" style="max-width:640px">
+    <form method="post" th:action="${editing} ? @{/librarian/books/{id}/edit(id=${bookId})} : @{/librarian/books/new}">
+      <div class="field"><label for="title">Title</label>
+        <input id="title" name="title" type="text" required th:value="${form.title}"></div>
+      <div class="field"><label for="author">Author</label>
+        <input id="author" name="author" type="text" required th:value="${form.author}"></div>
+      <div class="row">
+        <div class="field"><label for="isbn">ISBN</label>
+          <input id="isbn" name="isbn" type="text" required th:value="${form.isbn}">
+          <p class="hint">10 or 13 digits. Hyphens are fine.</p></div>
+        <div class="field"><label for="genre">Genre</label>
+          <input id="genre" name="genre" type="text" required th:value="${form.genre}"></div>
+      </div>
+      <div class="field" style="max-width:200px"><label for="totalCopies">Copies owned</label>
+        <input id="totalCopies" name="totalCopies" type="number" required th:min="${editing} ? ${onLoan} : 1"
+               th:value="${form.totalCopies}">
+        <p class="hint" th:if="${editing and onLoan > 0}" th:text="${onLoan} + ' on loan right now.'"></p></div>
+      <button class="btn" type="submit" th:text="${editing} ? 'Save changes' : 'Add book'">Save</button>
+      <a class="btn ghost" th:href="@{/librarian/books}">Cancel</a>
+    </form>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

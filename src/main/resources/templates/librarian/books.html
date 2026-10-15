@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Books')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('books')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head">
+    <div><h1>Books</h1>
+      <p><span th:text="${books.size()}">0</span> title(s)<span th:if="${!q.isEmpty()}" th:text="' matching “' + ${q} + '”'"></span></p></div>
+    <a class="btn" th:href="@{/librarian/books/new}">Add a book</a>
+  </div>
+  <form class="row" method="get" th:action="@{/librarian/books}" style="margin-bottom:1rem">
+    <div><label for="q" class="sr">Search the catalog</label>
+      <input id="q" type="search" name="q" th:value="${q}" placeholder="Title, author or genre"></div>
+    <div class="shrink"><button class="btn ghost" type="submit">Search</button></div>
+  </form>
+  <section class="panel">
+    <div class="table-wrap" th:if="${!books.isEmpty()}">
+      <table>
+        <thead><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Genre</th><th>Available</th><th></th></tr></thead>
+        <tbody>
+          <tr th:each="b : ${books}">
+            <td th:text="${b.book.title}">Title</td>
+            <td th:text="${b.book.author}">Author</td>
+            <td th:text="${b.book.isbn}">ISBN</td>
+            <td><span class="tag" th:text="${b.book.genre}">Genre</span></td>
+            <td th:text="${b.available} + ' of ' + ${b.book.totalCopies}">1 of 1</td>
+            <td class="actions">
+              <a class="btn ghost small" th:href="@{/librarian/books/{id}/edit(id=${b.book.id})}">Edit</a>
+              <form class="inline" method="post" th:action="@{/librarian/books/{id}/delete(id=${b.book.id})}"
+                    onsubmit="return confirm('Delete this book and its borrowing history?');">
+                <button class="btn danger small" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="empty" th:if="${books.isEmpty()}">No books found. <a th:href="@{/librarian/books/new}">Add the first one.</a></p>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

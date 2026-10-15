@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Inventory reports')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('reports')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head">
+    <div><h1>Inventory reports</h1><p>Stock levels and borrowing trends.</p></div>
+    <a class="btn ghost" th:href="@{/librarian/reports/inventory.csv}">Download inventory CSV</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b th:text="${stats.titles}">0</b><span>Titles</span></div>
+    <div class="stat"><b th:text="${stats.copies}">0</b><span>Total copies</span></div>
+    <div class="stat"><b th:text="${stats.available}">0</b><span>Available</span></div>
+    <div class="stat"><b th:text="${stats.onLoan}">0</b><span>On loan</span></div>
+    <div class="stat" th:classappend="${stats.overdue > 0} ? 'warn'"><b th:text="${stats.overdue}">0</b><span>Overdue</span></div>
+  </div>
+  <div id="charts" th:data-url="@{/librarian/reports/data}" class="grid two">
+    <section class="panel"><h2>Borrowing trends</h2>
+      <div class="chart-box"><canvas id="trendChart" role="img" aria-label="Books borrowed and returned per month"></canvas></div></section>
+    <section class="panel"><h2>Copies by genre</h2>
+      <div class="chart-box"><canvas id="genreChart" role="img" aria-label="Copies owned and on loan by genre"></canvas></div></section>
+  </div>
+  <div class="grid two">
+    <section class="panel"><h2>By genre</h2>
+      <div class="table-wrap" th:if="${!genres.isEmpty()}">
+        <table>
+          <thead><tr><th>Genre</th><th>Titles</th><th>Copies</th><th>On loan</th></tr></thead>
+          <tbody><tr th:each="g : ${genres}">
+            <td th:text="${g.genre}">Genre</td><td th:text="${g.titles}">0</td>
+            <td th:text="${g.copies}">0</td><td th:text="${g.onLoan}">0</td></tr></tbody>
+        </table>
+      </div>
+      <p class="empty" th:if="${genres.isEmpty()}">Add books to see genre totals.</p>
+    </section>
+    <section class="panel"><h2>Most borrowed</h2>
+      <div class="table-wrap" th:if="${!top.isEmpty()}">
+        <table>
+          <thead><tr><th>Title</th><th>Author</th><th>Loans</th></tr></thead>
+          <tbody><tr th:each="t : ${top}">
+            <td th:text="${t.title}">Title</td><td th:text="${t.author}">Author</td><td th:text="${t.borrows}">0</td></tr></tbody>
+        </table>
+      </div>
+      <p class="empty" th:if="${top.isEmpty()}">No loans recorded yet.</p>
+    </section>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script th:src="@{/js/reports.js}"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Notifications')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('notifications')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head"><h1>Notifications</h1></div>
+  <div class="grid two">
+    <section class="panel">
+      <h2>Send a notification</h2>
+      <form method="post" th:action="@{/librarian/notifications}">
+        <div class="field"><label for="kind">Type</label>
+          <select id="kind" name="kind">
+            <option th:each="k : ${kinds}" th:value="${k.name()}" th:text="${k.label}">General</option>
+          </select>
+          <p class="hint">Members who turned off due-date or new-arrival alerts are skipped for those types.</p></div>
+        <div class="field"><label for="message">Message</label>
+          <textarea id="message" name="message" required maxlength="500"></textarea></div>
+        <fieldset>
+          <legend>Recipients</legend>
+          <label class="check"><input type="radio" name="audience" value="all" checked> All members</label>
+          <label class="check"><input type="radio" name="audience" value="selected"> Selected members</label>
+          <div class="recipients">
+            <label class="check" th:each="m : ${members}">
+              <input type="checkbox" name="recipients" th:value="${m.id}">
+              <span th:text="${m.name} + ' (' + ${m.membershipId} + ')'"></span>
+            </label>
+            <p class="empty" th:if="${members.isEmpty()}">No members yet.</p>
+          </div>
+        </fieldset>
+        <button class="btn" type="submit">Send notification</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2>Due-date reminders</h2>
+      <p>Notify every member with a loan that is overdue or due within 2 days.</p>
+      <form method="post" th:action="@{/librarian/notifications/due-reminders}">
+        <button class="btn ghost" type="submit">Send due-date reminders</button>
+      </form>
+      <h2 style="margin-top:1.5rem">Recently sent</h2>
+      <div class="notice" th:each="n : ${recent}" th:classappend="${n.seen} ? 'read'">
+        <span th:text="${n.message}">Message</span>
+        <small th:text="'To ' + ${n.user.name} + ' on ' + ${#temporals.format(n.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
+      </div>
+      <p class="empty" th:if="${recent.isEmpty()}">Nothing sent yet.</p>
+    </section>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

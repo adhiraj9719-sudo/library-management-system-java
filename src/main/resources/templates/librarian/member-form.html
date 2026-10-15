@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${editing} ? 'Edit member' : 'Add a member')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('members')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head"><h1 th:text="${editing} ? 'Edit member' : 'Add a member'">Add a member</h1></div>
+  <section class="panel" style="max-width:640px">
+    <form method="post" th:action="${editing} ? @{/librarian/members/{id}/edit(id=${memberId})} : @{/librarian/members/new}">
+      <div class="field"><label for="name">Full name</label>
+        <input id="name" name="name" type="text" required th:value="${form.name}"></div>
+      <div class="field"><label for="email">Email</label>
+        <input id="email" name="email" type="email" required th:value="${form.email}"></div>
+      <div class="field"><label for="membershipId">Membership ID</label>
+        <input id="membershipId" name="membershipId" type="text" th:value="${form.membershipId}">
+        <p class="hint">Leave blank to generate one automatically.</p></div>
+      <div class="field"><label for="password" th:text="${editing} ? 'New password' : 'Password'">Password</label>
+        <input id="password" name="password" type="password" minlength="8" th:required="${!editing}" autocomplete="new-password">
+        <p class="hint" th:text="${editing} ? 'Leave blank to keep the current password.' : 'At least 8 characters. The member can change it later.'"></p></div>
+      <button class="btn" type="submit" th:text="${editing} ? 'Save changes' : 'Create member'">Save</button>
+      <a class="btn ghost" th:href="@{/librarian/members}">Cancel</a>
+    </form>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

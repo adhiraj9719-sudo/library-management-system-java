@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Alerts')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('alerts')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head"><h1>Alerts</h1>
+    <form method="post" th:action="@{/member/notifications/read-all}">
+      <button class="btn ghost" type="submit">Mark all as read</button>
+    </form></div>
+  <div class="grid two">
+    <section class="panel">
+      <h2>Your alerts</h2>
+      <div class="notice" th:each="n : ${notifications}" th:classappend="${n.seen} ? 'read'">
+        <span th:text="${n.message}">Message</span>
+        <small th:text="${#temporals.format(n.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
+      </div>
+      <p class="empty" th:if="${notifications.isEmpty()}">No alerts yet. Due dates and new arrivals will show up here.</p>
+    </section>
+    <section class="panel">
+      <h2>Notification preferences</h2>
+      <form method="post" th:action="@{/member/notifications/preferences}">
+        <label class="check"><input type="checkbox" name="notifyDue" value="on" th:checked="${currentUser.notifyDue}">
+          Due-date reminders for books I have borrowed</label>
+        <label class="check"><input type="checkbox" name="notifyNew" value="on" th:checked="${currentUser.notifyNew}">
+          New arrivals in the catalog</label>
+        <button class="btn" type="submit">Save preferences</button>
+      </form>
+    </section>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

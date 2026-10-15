@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('My dashboard')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('dashboard')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head">
+    <div><h1>Hello, <span th:text="${currentUser.name}">Member</span></h1>
+      <p>Membership ID <span th:text="${currentUser.membershipId}">LIB00001</span></p></div>
+    <form class="row" method="get" th:action="@{/member/search}" style="min-width:min(100%,380px)">
+      <div><label class="sr" for="q">Search books</label>
+        <input id="q" type="search" name="q" placeholder="Search by title, author or genre" required></div>
+      <div class="shrink"><button class="btn" type="submit">Search</button></div>
+    </form>
+  </div>
+
+  <section class="panel">
+    <h2>On loan now</h2>
+    <div class="table-wrap" th:if="${!active.isEmpty()}">
+      <table>
+        <thead><tr><th>Book</th><th>Author</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr th:each="t : ${active}">
+            <td th:text="${t.book.title}">Title</td>
+            <td th:text="${t.book.author}">Author</td>
+            <td><th:block th:replace="~{fragments :: loanStatus(${t})}"></th:block></td>
+            <td class="actions">
+              <form class="inline" method="post" th:action="@{/member/return/{id}(id=${t.id})}">
+                <input type="hidden" name="next" value="dashboard">
+                <button class="btn ghost small" type="submit">Return</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="empty" th:if="${active.isEmpty()}">Nothing on loan. <a th:href="@{/member/search}">Browse the catalog</a> to borrow a book.</p>
+  </section>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Notification alerts</h2>
+      <div class="notice" th:each="n : ${alerts}" th:classappend="${n.seen} ? 'read'">
+        <span th:text="${n.message}">Message</span>
+        <small th:text="${#temporals.format(n.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
+      </div>
+      <p class="empty" th:if="${alerts.isEmpty()}">No alerts yet.</p>
+      <a th:href="@{/member/notifications}">All alerts and preferences</a>
+    </section>
+    <section class="panel">
+      <h2>Search history</h2>
+      <div class="table-wrap" th:if="${!searches.isEmpty()}">
+        <table>
+          <thead><tr><th>Search</th><th>In</th><th>Results</th></tr></thead>
+          <tbody>
+            <tr th:each="s : ${searches}">
+              <td><a th:href="@{/member/search(q=${s.query},field=${s.field})}" th:text="${s.query}">query</a></td>
+              <td th:text="${s.field}">all</td>
+              <td th:text="${s.resultCount}">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="empty" th:if="${searches.isEmpty()}">Your searches will appear here.</p>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Borrowing history</h2>
+    <div class="table-wrap" th:if="${!loans.isEmpty()}">
+      <table>
+        <thead><tr><th>Book</th><th>Borrowed</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr th:each="t : ${loans}">
+            <td th:text="${t.book.title}">Title</td>
+            <td th:text="${t.borrowDate}">2026-01-01</td>
+            <td><th:block th:replace="~{fragments :: loanStatus(${t})}"></th:block></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p th:if="${!loans.isEmpty()}"><a th:href="@{/member/history}">Full history</a> · <a th:href="@{/member/profile}">Update your profile</a></p>
+    <p class="empty" th:if="${loans.isEmpty()}">You have not borrowed any books yet.</p>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

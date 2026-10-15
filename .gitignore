@@ -1,0 +1,12 @@
+target/
+data/
+*.mv.db
+*.trace.db
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+.DS_Store
+.env

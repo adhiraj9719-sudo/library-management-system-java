@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Profile')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('profile')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head"><div><h1>Profile</h1>
+    <p>Membership ID <span th:text="${currentUser.membershipId}">LIB00001</span></p></div></div>
+  <section class="panel" style="max-width:640px">
+    <form method="post" th:action="@{/member/profile}">
+      <div class="field"><label for="name">Full name</label>
+        <input id="name" name="name" type="text" required th:value="${currentUser.name}"></div>
+      <div class="field"><label for="email">Email</label>
+        <input id="email" name="email" type="email" required th:value="${currentUser.email}">
+        <p class="hint">Your email is your login. If you change it you will need to sign in again.</p></div>
+      <fieldset>
+        <legend>Change password</legend>
+        <div class="field"><label for="currentPassword">Current password</label>
+          <input id="currentPassword" name="currentPassword" type="password" autocomplete="current-password"></div>
+        <div class="field"><label for="password">New password</label>
+          <input id="password" name="password" type="password" minlength="8" autocomplete="new-password">
+          <p class="hint">Leave both blank to keep your current password.</p></div>
+      </fieldset>
+      <button class="btn" type="submit">Save changes</button>
+    </form>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

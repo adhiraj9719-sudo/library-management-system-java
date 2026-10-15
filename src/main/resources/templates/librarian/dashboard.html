@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Librarian dashboard')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('dashboard')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head">
+    <div><h1>Librarian dashboard</h1><p>Welcome back, <span th:text="${currentUser.name}">Librarian</span>.</p></div>
+    <a class="btn" th:href="@{/librarian/books/new}">Add a book</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b th:text="${stats.titles}">0</b><span>Titles in catalog</span></div>
+    <div class="stat"><b th:text="${stats.available}">0</b><span>Copies on the shelf</span></div>
+    <div class="stat"><b th:text="${stats.onLoan}">0</b><span>Copies on loan</span></div>
+    <div class="stat" th:classappend="${stats.overdue > 0} ? 'warn'"><b th:text="${stats.overdue}">0</b><span>Overdue loans</span></div>
+    <div class="stat"><b th:text="${stats.members}">0</b><span>Members</span></div>
+  </div>
+  <section class="panel">
+    <h2>Recent transactions</h2>
+    <div class="table-wrap" th:if="${!recent.isEmpty()}">
+      <table>
+        <thead><tr><th>Book</th><th>Member</th><th>Borrowed</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr th:each="t : ${recent}">
+            <td th:text="${t.book.title}">Title</td>
+            <td th:text="${t.member.name}">Member</td>
+            <td th:text="${t.borrowDate}">2026-01-01</td>
+            <td><th:block th:replace="~{fragments :: loanStatus(${t})}"></th:block></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p th:if="${!recent.isEmpty()}"><a th:href="@{/librarian/transactions}">See all transactions</a></p>
+    <p class="empty" th:if="${recent.isEmpty()}">No transactions yet. Record the first loan from the Transactions page.</p>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

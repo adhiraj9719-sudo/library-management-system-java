@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(title)">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title} + ' · Stacks Library'">Stacks Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:wght@500;600;700&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<header class="site-header" th:fragment="nav(active)">
+  <div class="inner">
+    <a class="brand" th:href="@{/}">Stacks</a>
+    <nav class="nav" aria-label="Main">
+      <th:block th:if="${currentUser != null and currentUser.librarian}">
+        <a th:href="@{/librarian}" th:aria-current="${active == 'dashboard'} ? 'page'">Dashboard</a>
+        <a th:href="@{/librarian/books}" th:aria-current="${active == 'books'} ? 'page'">Books</a>
+        <a th:href="@{/librarian/members}" th:aria-current="${active == 'members'} ? 'page'">Members</a>
+        <a th:href="@{/librarian/transactions}" th:aria-current="${active == 'transactions'} ? 'page'">Transactions</a>
+        <a th:href="@{/librarian/notifications}" th:aria-current="${active == 'notifications'} ? 'page'">Notifications</a>
+        <a th:href="@{/librarian/reports}" th:aria-current="${active == 'reports'} ? 'page'">Reports</a>
+      </th:block>
+      <th:block th:if="${currentUser != null and !currentUser.librarian}">
+        <a th:href="@{/member}" th:aria-current="${active == 'dashboard'} ? 'page'">Dashboard</a>
+        <a th:href="@{/member/search}" th:aria-current="${active == 'search'} ? 'page'">Find books</a>
+        <a th:href="@{/member/history}" th:aria-current="${active == 'history'} ? 'page'">My loans</a>
+        <a th:href="@{/member/notifications}" th:aria-current="${active == 'alerts'} ? 'page'">Alerts
+          <span class="badge" id="notif-badge" th:data-url="@{/member/api/notifications}"
+                th:hidden="${unreadCount == null or unreadCount == 0}" th:text="${unreadCount}">0</span></a>
+        <a th:href="@{/member/profile}" th:aria-current="${active == 'profile'} ? 'page'">Profile</a>
+      </th:block>
+      <form class="inline" method="post" th:action="@{/logout}" th:if="${currentUser != null}">
+        <button type="submit">Sign out</button>
+      </form>
+    </nav>
+  </div>
+</header>
+
+<div th:fragment="flash">
+  <div class="flash success" role="status" th:if="${flashSuccess}" th:text="${flashSuccess}"></div>
+  <div class="flash error" role="alert" th:if="${flashError}" th:text="${flashError}"></div>
+  <div class="flash error" role="alert" th:if="${error}" th:text="${error}"></div>
+</div>
+
+<footer th:fragment="footer">
+  <p>Stacks · Online Library Management System</p>
+  <script th:src="@{/js/app.js}" defer></script>
+</footer>
+
+<th:block th:fragment="loanStatus(l)">
+  <span class="stamp ok" th:if="${l.returnDate != null}" th:text="'Returned ' + ${l.returnDate}"></span>
+  <span class="stamp" th:if="${l.returnDate == null and l.overdue}" th:text="'Overdue since ' + ${l.dueDate}"></span>
+  <span class="stamp due" th:if="${l.returnDate == null and !l.overdue}" th:text="'Due ' + ${l.dueDate}"></span>
+</th:block>
+
+</body>
+</html>

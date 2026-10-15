@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Members')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('members')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head">
+    <div><h1>Members</h1><p><span th:text="${members.size()}">0</span> member(s)</p></div>
+    <a class="btn" th:href="@{/librarian/members/new}">Add a member</a>
+  </div>
+  <form class="row" method="get" th:action="@{/librarian/members}" style="margin-bottom:1rem">
+    <div><label for="q" class="sr">Search members</label>
+      <input id="q" type="search" name="q" th:value="${q}" placeholder="Name, email or membership ID"></div>
+    <div class="shrink"><button class="btn ghost" type="submit">Search</button></div>
+  </form>
+  <section class="panel">
+    <div class="table-wrap" th:if="${!members.isEmpty()}">
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Membership ID</th><th>On loan</th><th></th></tr></thead>
+        <tbody>
+          <tr th:each="m : ${members}">
+            <td th:text="${m.name}">Name</td>
+            <td th:text="${m.email}">Email</td>
+            <td th:text="${m.membershipId}">LIB00001</td>
+            <td th:text="${loanCounts[m.id]}">0</td>
+            <td class="actions">
+              <a class="btn ghost small" th:href="@{/librarian/members/{id}/edit(id=${m.id})}">Edit</a>
+              <form class="inline" method="post" th:action="@{/librarian/members/{id}/delete(id=${m.id})}"
+                    onsubmit="return confirm('Delete this member and their history?');">
+                <button class="btn danger small" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="empty" th:if="${members.isEmpty()}">No members found.</p>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

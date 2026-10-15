@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('My loans')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('history')}"></header>
+<main>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="page-head"><h1>My loans</h1></div>
+  <section class="panel">
+    <div class="table-wrap" th:if="${!loans.isEmpty()}">
+      <table>
+        <thead><tr><th>Book</th><th>Author</th><th>Borrowed</th><th>Due</th><th>Returned</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr th:each="t : ${loans}">
+            <td th:text="${t.book.title}">Title</td>
+            <td th:text="${t.book.author}">Author</td>
+            <td th:text="${t.borrowDate}">2026-01-01</td>
+            <td th:text="${t.dueDate}">2026-01-15</td>
+            <td th:text="${t.returnDate}"></td>
+            <td><th:block th:replace="~{fragments :: loanStatus(${t})}"></th:block></td>
+            <td class="actions">
+              <form class="inline" method="post" th:if="${!t.returned}" th:action="@{/member/return/{id}(id=${t.id})}">
+                <button class="btn ghost small" type="submit">Return</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="empty" th:if="${loans.isEmpty()}">You have not borrowed any books yet. <a th:href="@{/member/search}">Find your first book.</a></p>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
